@@ -47,7 +47,7 @@ public class HeroKnight : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (!is_hitting && !is_reflecting)
+        if (!is_hitting && !is_reflecting && HeroKnight.health != 0)
         {
             rig.velocity = new Vector2(m_direc * player_speed * Time.deltaTime, rig.velocity.y);
         }
@@ -82,7 +82,7 @@ public class HeroKnight : MonoBehaviour
             m_direc = 0f;
         }
 
-        if (jump_count <= max_jump - 1)
+        if (jump_count <= max_jump - 1 && HeroKnight.health != 0)
         {
             if (Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -236,6 +236,5 @@ public class HeroKnight : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
         reflection_effect.SetActive(false);
         is_reflecting = false;
-        healthbar.Damage(3, "player1"); // 패링성공 딜
     }
 }

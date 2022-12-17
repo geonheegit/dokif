@@ -532,8 +532,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -481.79, y: -85.7717}
-  m_SizeDelta: {x: 803.58, y: 568.7062}
+  m_AnchoredPosition: {x: -481.79, y: -109.97012}
+  m_SizeDelta: {x: 803.58, y: 617.103}
   m_Pivot: {x: 0.5, y: 0.49999994}
 --- !u!114 &1327575204
 MonoBehaviour:
@@ -568,9 +568,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD50C\uB808\uC774\uC5B4 1 (\uBE68\uAC04\uC0C9 \uB3C4\uC801)\n\n\uC88C\uC6B0\uC774\uB3D9:
-    A, D\n\uC810\uD504: W (2\uB2E8 \uC810\uD504\uAE4C\uC9C0 \uAC00\uB2A5)\n\uACF5\uACA91:
-    C\n\uACF5\uACA92: V"
+  m_Text: "\uD50C\uB808\uC774\uC5B4 1 (\uBE68\uAC04\uC0C9 \uB3C4\uC801)\n\n[\uC88C\uC6B0\uC774\uB3D9]
+    A, D\n[\uC810\uD504] W (2\uB2E8 \uC810\uD504\uAE4C\uC9C0 \uAC00\uB2A5)\n[\uACF5\uACA91]
+    C\n[\uACF5\uACA92] V\n[\uD328\uB9C1] B"
 --- !u!222 &1327575205
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -832,7 +832,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 595, y: 380}
+  m_AnchoredPosition: {x: 588, y: 428}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1743818879
@@ -908,8 +908,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 465.93774, y: -148.92831}
-  m_SizeDelta: {x: 875.0252, y: 695.0226}
+  m_AnchoredPosition: {x: 428.43018, y: -150.13828}
+  m_SizeDelta: {x: 950.0402, y: 697.4425}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1831706678
 MonoBehaviour:
@@ -944,10 +944,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD50C\uB808\uC774\uC5B4 2 (\uD30C\uB780\uC0C9 \uAE30\uC0AC)\n\n\uC88C\uC6B0\uC774\uB3D9:
-    \uC67C\uCABD \uB610\uB294 \uC624\uB978\uCABD \uBC29\uD5A5\uD0A4\n\uC810\uD504:
-    \uC704\uCABD \uBC29\uD5A5\uD0A4 (2\uB2E8 \uC810\uD504\uAE4C\uC9C0 \uAC00\uB2A5)\n\uACF5\uACA91:
-    K\n\uACF5\uACA92: L"
+  m_Text: "\uD50C\uB808\uC774\uC5B4 2 (\uD30C\uB780\uC0C9 \uAE30\uC0AC)\n\n[\uC88C\uC6B0\uC774\uB3D9]
+    \uC67C\uCABD \uB610\uB294 \uC624\uB978\uCABD \uBC29\uD5A5\uD0A4\n[\uC810\uD504]
+    \uC704\uCABD \uBC29\uD5A5\uD0A4 (2\uB2E8 \uC810\uD504\uAE4C\uC9C0 \uAC00\uB2A5)\n[\uACF5\uACA91]
+    K\n[\uACF5\uACA92] L\n[\uD328\uB9C1] ;(\uC138\uBBF8\uCF5C\uB860)"
 --- !u!222 &1831706679
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class player_controller : MonoBehaviour
 {
     float m_direc;
     bool is_hitting;
+    bool is_reflecting;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -16,6 +17,17 @@ public class player_controller : MonoBehaviour
     public int jump_count = 0;
     public int knock_back_x = 15;
     public int knock_back_y = 8;
+    public int reflect_knockback_x = 10;
+    public int reflect_knockback_y = 5;
+    public int attack1_dmg = 10;
+    public int attack2_dmg = 20;
+
+    [SerializeField] private GameObject floatingTextPrefab;
+
+    public GameObject enemy;
+    public GameObject reflection_effect;
+    public GameObject reflection_ready_effect;
+    Rigidbody2D enemy_rig;
 
     public GameObject main_cam;
     Rigidbody2D rig;
@@ -28,6 +40,7 @@ public class player_controller : MonoBehaviour
     void Start()
     {
         rig = GetComponent<Rigidbody2D>();
+        enemy_rig = enemy.GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -36,7 +49,7 @@ public class player_controller : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!is_hitting)
+        if (!is_hitting && !is_reflecting && player_controller.health != 0)
         {
             rig.velocity = new Vector2(m_direc * player_speed * Time.deltaTime, rig.velocity.y);
         }
@@ -59,12 +72,17 @@ public class player_controller : MonoBehaviour
             m_direc = 1f;
         }
 
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            StartCoroutine("Reflection");
+        }
+
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             m_direc = 0f;
         }
 
-        if (jump_count < max_jump - 1)
+        if (jump_count < max_jump - 1 && player_controller.health != 0)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -158,23 +176,38 @@ public class player_controller : MonoBehaviour
     {
         if (other.gameObject.name == "att1_hb")
         {
-            if (this.transform.position.x > main_player_trans.transform.position.x)
+            if (this.transform.position.x > main_player_trans.transform.position.x && !is_reflecting)
             {
                 rig.velocity = new Vector2(0, 0);
                 rig.AddForce(new Vector3(knock_back_x, knock_back_y, 0), ForceMode2D.Impulse);
-                healthbar.Damage(10, "player1"); // 공격1 딜
+                healthbar.Damage(attack1_dmg, "player1"); // 공격1 딜
+                ShowDamage(attack1_dmg.ToString());
                 CreateBlood();
                 StartCoroutine("Hit_Duration");
                 StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.5f));
             }
-            else
+            else if (this.transform.position.x < main_player_trans.transform.position.x && !is_reflecting)
             {
                 rig.velocity = new Vector2(0, 0);
                 rig.AddForce(new Vector3(-knock_back_x, knock_back_y, 0), ForceMode2D.Impulse);
-                healthbar.Damage(10, "player1"); // 공격1 딜
+                healthbar.Damage(attack1_dmg, "player1"); // 공격1 딜
+                ShowDamage(attack1_dmg.ToString());
                 CreateBlood();
                 StartCoroutine("Hit_Duration");
                 StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.5f));
+            }
+
+            if (this.transform.position.x > main_player_trans.transform.position.x && is_reflecting)
+            {
+                rig.AddForce(new Vector3(reflect_knockback_x, 0, 0), ForceMode2D.Impulse); // 패링성공시 자신한테 반동
+                enemy_rig.AddForce(new Vector3(-reflect_knockback_x, reflect_knockback_y, 0), ForceMode2D.Impulse); // 패링성공시 적한테 반동
+                StartCoroutine("Reflection_Success_Eff"); // 패링성공시 성공 효과 재생
+            }
+            else if (this.transform.position.x < main_player_trans.transform.position.x && is_reflecting)
+            {
+                rig.AddForce(new Vector3(-reflect_knockback_x, 0, 0), ForceMode2D.Impulse); // 패링성공시 자신한테 반동
+                enemy_rig.AddForce(new Vector3(reflect_knockback_x, reflect_knockback_y, 0), ForceMode2D.Impulse); // 패링성공시 적한테 반동
+                StartCoroutine("Reflection_Success_Eff"); // 패링성공시 성공 효과 재생
             }
         }
     }
@@ -186,6 +219,14 @@ public class player_controller : MonoBehaviour
     void CreateBlood()
     {
         blood.Play();
+    }
+    void ShowDamage(string text)
+    {
+        if (floatingTextPrefab)
+        {
+            GameObject prefab = Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
+            prefab.GetComponentInChildren<TextMesh>().text = text;
+        }
     }
 
     IEnumerator Sword_Onhb()
@@ -200,5 +241,21 @@ public class player_controller : MonoBehaviour
         is_hitting = true;
         yield return new WaitForSeconds(0.3f);
         is_hitting = false;
+    }
+    IEnumerator Reflection() // 패링시도시 0.5초간 움직이지 못하는 방어자세 코루틴
+    {
+        is_reflecting = true;
+        reflection_ready_effect.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        reflection_ready_effect.SetActive(false);
+        is_reflecting = false;
+    }
+    IEnumerator Reflection_Success_Eff() // 패링성공시
+    {
+        reflection_ready_effect.SetActive(false);
+        reflection_effect.SetActive(true);
+        yield return new WaitForSeconds(0.15f);
+        reflection_effect.SetActive(false);
+        is_reflecting = false;
     }
 }
