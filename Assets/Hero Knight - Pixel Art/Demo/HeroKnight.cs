@@ -12,6 +12,8 @@ public class HeroKnight : MonoBehaviour
 
     public static float health = 100f;
     public static float max_health = 100f;
+    public static float ultmeter = 0f;
+    public static float max_ultmeter = 100f;
     public int player_speed;
     public int jump_power;
     public int max_speed = 10;
@@ -211,6 +213,7 @@ public class HeroKnight : MonoBehaviour
                 enemy.GetComponent<player_controller>().ShowText("기절함!");
                 Parrying(); // 패링 파티클 재생
                 StartCoroutine(enemy.GetComponent<player_controller>().Stun()); // 패링 성공시 적 스턴
+                ultbar.UltAdd(20, "player2"); // 궁극기 게이지 ADD
             }
             else if (this.transform.position.x < main_player_trans.transform.position.x && is_reflecting)
             {
@@ -220,6 +223,7 @@ public class HeroKnight : MonoBehaviour
                 enemy.GetComponent<player_controller>().ShowText("기절함!");
                 Parrying(); // 패링 파티클 재생
                 StartCoroutine(enemy.GetComponent<player_controller>().Stun()); // 패링 성공시 적 스턴
+                ultbar.UltAdd(20, "player2"); // 궁극기 게이지 ADD
             }
         }
     }

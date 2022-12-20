@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class healthbar : MonoBehaviour
 {
@@ -47,6 +46,7 @@ public class healthbar : MonoBehaviour
             }
         }
     }
+    
 
     void Update()
     {
@@ -55,11 +55,10 @@ public class healthbar : MonoBehaviour
             health_bar_img.fillAmount = HeroKnight.health / HeroKnight.max_health;
             hp_text.text = HeroKnight.health.ToString();
         }
-        else
+        else if (health_bar_img.name == "p1_health_bar")
         {
             health_bar_img.fillAmount = player_controller.health / player_controller.max_health;
             hp_text.text = player_controller.health.ToString();
         }
-        
     }
 }
