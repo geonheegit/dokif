@@ -25,6 +25,7 @@ public class HeroKnight : MonoBehaviour
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
     public int attack2_dmg = 20;
+    public int p1_ult_dmg = 50;
     public int parrying_cooldown = 3;
     float parrying_start_cool;
     public float parrying_passed_time;
@@ -181,6 +182,7 @@ public class HeroKnight : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log(other.name);
         if (other.gameObject.name == "sword_hitbox")
         {
             if (this.transform.position.x > main_player_trans.transform.position.x && !is_reflecting)
@@ -225,6 +227,13 @@ public class HeroKnight : MonoBehaviour
                 StartCoroutine(enemy.GetComponent<player_controller>().Stun()); // 패링 성공시 적 스턴
                 ultbar.UltAdd(20, "player2"); // 궁극기 게이지 ADD
             }
+        }
+
+        if (other.gameObject.name == "ult_hb_L" || other.gameObject.name == "ult_hb_R") // 상대 궁극기에 맞았을 때
+        {
+            StartCoroutine("HitByUlt");
+            StartCoroutine("Stun");
+            StartCoroutine("Hit_Duration");
         }
     }
 
@@ -291,5 +300,49 @@ public class HeroKnight : MonoBehaviour
         yield return new WaitForSeconds(1.1f);
         is_stunning = false;
         stun_icon.SetActive(false);
+    }
+    IEnumerator HitByUlt() // 상대방 궁 맞았을 때
+    {
+        int each_dmg = p1_ult_dmg / 2;
+        if (this.transform.position.x > main_player_trans.transform.position.x)
+        {
+            healthbar.Damage(each_dmg, "player2"); // 궁 딜
+            ShowText(each_dmg.ToString());
+            CreateBlood();
+            StartCoroutine("HitEffect");
+            ShowText("기절함!");
+            StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
+            rig.AddForce(new Vector3(knock_back_x * 2, knock_back_y * 2, 0), ForceMode2D.Impulse);
+
+            yield return new WaitForSeconds(0.3f); // 돌진하고 되돌아가는데 걸리는 시간 텀
+
+            healthbar.Damage(each_dmg, "player2"); // 궁 딜
+            ShowText(each_dmg.ToString());
+            CreateBlood();
+            StartCoroutine("HitEffect");
+            ShowText("기절함!");
+            StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
+            rig.AddForce(new Vector3(-knock_back_x * 2, knock_back_y * 2, 0), ForceMode2D.Impulse);
+        }
+        else if (this.transform.position.x < main_player_trans.transform.position.x)
+        {
+            healthbar.Damage(each_dmg, "player2"); // 궁 딜
+            ShowText(each_dmg.ToString());
+            CreateBlood();
+            StartCoroutine("HitEffect");
+            ShowText("기절함!");
+            StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
+            rig.AddForce(new Vector3(-knock_back_x * 2, knock_back_y * 2, 0), ForceMode2D.Impulse);
+
+            yield return new WaitForSeconds(0.3f); // 돌진하고 되돌아가는데 걸리는 시간 텀
+
+            healthbar.Damage(each_dmg, "player2"); // 궁 딜
+            ShowText(each_dmg.ToString());
+            CreateBlood();
+            StartCoroutine("HitEffect");
+            ShowText("기절함!");
+            StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
+            rig.AddForce(new Vector3(knock_back_x * 2, knock_back_y * 2, 0), ForceMode2D.Impulse);
+        }
     }
 }

@@ -8,6 +8,7 @@ public class player_controller : MonoBehaviour
     bool is_hitting;
     bool is_reflecting;
     bool is_stunning;
+    bool is_unabletomove; //
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -37,6 +38,13 @@ public class player_controller : MonoBehaviour
 
     public GameObject main_cam;
     public GameObject stun_icon;
+    public GameObject ult_icon;
+    public GameObject ult_highlight;
+    public GameObject ult_highlight_left;
+    public GameObject ult_hb_L;
+    public GameObject ult_hb_R;
+    public GameObject ult_trail;
+
     Rigidbody2D rig;
     Animator anim;
     SpriteRenderer spriteRenderer;
@@ -44,6 +52,7 @@ public class player_controller : MonoBehaviour
     public ParticleSystem blood;
     public ParticleSystem dust;
     public ParticleSystem parrying_eff;
+    public ParticleSystem ult_ready_aura;
     public GameObject sword_h;
     void Start()
     {
@@ -53,11 +62,12 @@ public class player_controller : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         main_player_trans = GameObject.Find("HeroKnight").GetComponent<Transform>();
+        is_unabletomove = false;
     }
 
     void FixedUpdate()
     {
-        if (!is_hitting && !is_reflecting && player_controller.health != 0 && !is_stunning)
+        if (!is_hitting && !is_reflecting && player_controller.health != 0 && !is_stunning && !is_unabletomove)
         {
             rig.velocity = new Vector2(m_direc * player_speed * Time.deltaTime, rig.velocity.y);
         }
@@ -72,6 +82,13 @@ public class player_controller : MonoBehaviour
 
     void PlayerSettings()
     {
+        /*
+        if (Input.GetKey(KeyCode.T)) // 디버그용 궁극기 게이치 채우기
+        {
+            ultmeter = 100;
+        }
+        */
+
         if (!is_stunning) // 스턴 상태가 아닐 때
         {
             if (Input.GetKey(KeyCode.A))
@@ -87,6 +104,12 @@ public class player_controller : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.B))
             {
                 StartCoroutine("Reflection");
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space) && ultmeter == 100)
+            {
+                ultmeter = 0;
+                StartCoroutine("Ultimate");
             }
 
             if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
@@ -105,26 +128,15 @@ public class player_controller : MonoBehaviour
                 }
             }
         }
-        
-
-        // 속도 한계치 제한
-        if (rig.velocity.x > max_speed)
-        {
-            rig.velocity = new Vector3(max_speed, rig.velocity.y, 0);
-        }
-        else if (rig.velocity.x < -max_speed)
-        {
-            rig.velocity = new Vector3(-max_speed, rig.velocity.y, 0);
-        }
 
         // 방향 전환
-        if (Input.GetKeyDown(KeyCode.A) && !spriteRenderer.flipX)
+        if (Input.GetKeyDown(KeyCode.A) && !spriteRenderer.flipX && !is_unabletomove)
         {
             spriteRenderer.flipX = true;
             sword_h.transform.localPosition = new Vector3(-0.35f, 0, 0);
             CreateDust();
         }
-        else if (Input.GetKeyDown(KeyCode.D) && spriteRenderer.flipX)
+        else if (Input.GetKeyDown(KeyCode.D) && spriteRenderer.flipX && !is_unabletomove)
         {
             spriteRenderer.flipX = false;
             sword_h.transform.localPosition = new Vector3(0.37f, 0, 0);
@@ -141,7 +153,7 @@ public class player_controller : MonoBehaviour
             anim.SetBool("is_running", true);
         }
 
-        if (!is_stunning) // 스턴 상태가 아닐 때
+        if (!is_stunning && !is_unabletomove) // 스턴 상태나 이동 불가 상태가 아닐 때
         {
             // 검 공격 모션
             if (Input.GetKeyDown(KeyCode.C) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
@@ -299,5 +311,54 @@ public class player_controller : MonoBehaviour
         yield return new WaitForSeconds(1.1f);
         is_stunning = false;
         stun_icon.SetActive(false);
+    }
+    public IEnumerator Ultimate() // 1초간 궁극기 사용
+    {
+        ult_ready_aura.Play();
+        is_unabletomove = true;
+        if (!spriteRenderer.flipX)
+        {
+            ult_highlight.SetActive(true);
+        }
+        else if (spriteRenderer.flipX)
+        {
+            ult_highlight_left.SetActive(true);
+        }
+        ult_icon.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
+
+        Vector3 current_pos = transform.position;
+        if (!spriteRenderer.flipX)
+        {
+            ult_highlight.SetActive(false);
+            ult_hb_R.SetActive(true);
+            yield return new WaitForSeconds(0.02f); // 히트박스 감지할 수 있게 해주는 텀
+            ult_trail.SetActive(true);
+            yield return new WaitForSeconds(0.001f); // trail 발동 시간
+            ult_hb_R.SetActive(false);
+            transform.position = new Vector3(8, current_pos.y, 0);
+            yield return new WaitForSeconds(0.3f); // 대쉬 했다가 되돌아오는 시간
+            transform.position = current_pos;
+            yield return new WaitForSeconds(0.2f); // trail 수명
+            ult_trail.SetActive(false);
+
+        }
+        else if (spriteRenderer.flipX)
+        {
+            ult_highlight_left.SetActive(false);
+            ult_hb_L.SetActive(true);
+            yield return new WaitForSeconds(0.02f); // 히트박스 감지할 수 있게 해주는 텀
+            ult_trail.SetActive(true);
+            yield return new WaitForSeconds(0.001f); // trail 발동 시간
+            ult_hb_L.SetActive(false);
+            transform.position = new Vector3(-8, current_pos.y, 0);
+            yield return new WaitForSeconds(0.3f); // 대쉬 했다가 되돌아오는 시간
+            transform.position = current_pos;
+            yield return new WaitForSeconds(0.2f); // trail 수명
+            ult_trail.SetActive(false);
+        }
+        is_unabletomove = false;
+        ult_icon.SetActive(false);
     }
 }

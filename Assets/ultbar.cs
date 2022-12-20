@@ -33,11 +33,29 @@ public class ultbar : MonoBehaviour
         {
             ult_bar_img.fillAmount = HeroKnight.ultmeter / HeroKnight.max_ultmeter;
             ult_text.text = HeroKnight.ultmeter.ToString();
+
+            if (ult_bar_img.fillAmount == 1) // 게이지 다 차면 파란색으로
+            {
+                ult_bar_img.color = new Color(0, 0, 255);
+            }
+            else
+            {
+                ult_bar_img.color = new Color(255, 0, 0);
+            }
         }
         else if (ult_bar_img.name == "p1_ULTbar")
         {
             ult_bar_img.fillAmount = player_controller.ultmeter / player_controller.max_ultmeter;
             ult_text.text = player_controller.ultmeter.ToString();
+
+            if (ult_bar_img.fillAmount == 1) // 게이지 다 차면 파란색으로
+            {
+                ult_bar_img.color = new Color(0, 0, 255);
+            }
+            else
+            {
+                ult_bar_img.color = new Color(255, 0, 0);
+            }
         }
     }
 }
