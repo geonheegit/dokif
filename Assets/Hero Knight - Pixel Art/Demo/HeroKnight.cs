@@ -23,9 +23,9 @@ public class HeroKnight : MonoBehaviour
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
     public int attack2_dmg = 20;
-    public int parrying_cooldown = 3; //
-    float parrying_start_cool; //
-    public float parrying_passed_time; //
+    public int parrying_cooldown = 3;
+    float parrying_start_cool;
+    public float parrying_passed_time;
 
     [SerializeField] private GameObject floatingTextPrefab;
 
@@ -64,7 +64,7 @@ public class HeroKnight : MonoBehaviour
     void Update()
     {
         PlayerSettings();
-        parrying_passed_time = Time.time - parrying_start_cool; //
+        parrying_passed_time = Time.time - parrying_start_cool;
     }
     void PlayerSettings()
     {

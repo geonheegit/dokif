@@ -22,9 +22,9 @@ public class player_controller : MonoBehaviour
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
     public int attack2_dmg = 20;
-    public int parrying_cooldown = 3; //
-    float parrying_start_cool; //
-    public float parrying_passed_time; //
+    public int parrying_cooldown = 3;
+    float parrying_start_cool;
+    public float parrying_passed_time;
 
     [SerializeField] private GameObject floatingTextPrefab;
 
@@ -65,7 +65,7 @@ public class player_controller : MonoBehaviour
     {
         PlayerSettings();
 
-        parrying_passed_time = Time.time - parrying_start_cool; //
+        parrying_passed_time = Time.time - parrying_start_cool;
     }
 
     void PlayerSettings()
@@ -270,9 +270,9 @@ public class player_controller : MonoBehaviour
     }
     IEnumerator Reflection() // 패링시도시 0.5초간 움직이지 못하는 방어자세 코루틴
     {
-        if(parrying_passed_time >= parrying_cooldown) //
+        if(parrying_passed_time >= parrying_cooldown)
         {
-            parrying_start_cool = Time.time; //
+            parrying_start_cool = Time.time;
             is_reflecting = true;
             reflection_ready_effect.SetActive(true);
             yield return new WaitForSeconds(0.5f);
