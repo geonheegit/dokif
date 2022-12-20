@@ -9,6 +9,14 @@ public class Help_Manager : MonoBehaviour
     {
         SceneManager.LoadScene("Main_Screen");
     }
+    public void OnClickHelp2()
+    {
+        SceneManager.LoadScene("Help2");
+    }
+    public void OnClickHelp1()
+    {
+        SceneManager.LoadScene("Help");
+    }
     void Update()
     {
         

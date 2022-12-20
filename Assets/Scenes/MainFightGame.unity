@@ -16801,7 +16801,7 @@ MonoBehaviour:
   knock_back_y: 8
   reflect_knockback_x: 10
   reflect_knockback_y: 5
-  attack1_dmg: 10
+  attack1_dmg: 6
   attack2_dmg: 20
   parrying_cooldown: 3
   parrying_passed_time: 0
