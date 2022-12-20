@@ -7,6 +7,7 @@ public class player_controller : MonoBehaviour
     float m_direc;
     bool is_hitting;
     bool is_reflecting;
+    bool is_stunning;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -21,6 +22,9 @@ public class player_controller : MonoBehaviour
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
     public int attack2_dmg = 20;
+    public int parrying_cooldown = 3; //
+    float parrying_start_cool; //
+    public float parrying_passed_time; //
 
     [SerializeField] private GameObject floatingTextPrefab;
 
@@ -30,12 +34,14 @@ public class player_controller : MonoBehaviour
     Rigidbody2D enemy_rig;
 
     public GameObject main_cam;
+    public GameObject stun_icon;
     Rigidbody2D rig;
     Animator anim;
-    public ParticleSystem blood;
     SpriteRenderer spriteRenderer;
     Transform main_player_trans;
+    public ParticleSystem blood;
     public ParticleSystem dust;
+    public ParticleSystem parrying_eff;
     public GameObject sword_h;
     void Start()
     {
@@ -49,7 +55,7 @@ public class player_controller : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!is_hitting && !is_reflecting && player_controller.health != 0)
+        if (!is_hitting && !is_reflecting && player_controller.health != 0 && !is_stunning)
         {
             rig.velocity = new Vector2(m_direc * player_speed * Time.deltaTime, rig.velocity.y);
         }
@@ -58,40 +64,46 @@ public class player_controller : MonoBehaviour
     void Update()
     {
         PlayerSettings();
+
+        parrying_passed_time = Time.time - parrying_start_cool; //
     }
 
     void PlayerSettings()
     {
-        if (Input.GetKey(KeyCode.A))
+        if (!is_stunning) // 스턴 상태가 아닐 때
         {
-            m_direc = -1f;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            m_direc = 1f;
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            StartCoroutine("Reflection");
-        }
-
-        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-        {
-            m_direc = 0f;
-        }
-
-        if (jump_count < max_jump - 1 && player_controller.health != 0)
-        {
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKey(KeyCode.A))
             {
-                rig.velocity = new Vector2(rig.velocity.x, 0);
-                rig.AddForce(new Vector3(0, jump_power, 0), ForceMode2D.Impulse);
-                jump_count += 1;
-                CreateDust();
+                m_direc = -1f;
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                m_direc = 1f;
+            }
+
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                StartCoroutine("Reflection");
+            }
+
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+            {
+                m_direc = 0f;
+            }
+
+            if (jump_count < max_jump - 1 && player_controller.health != 0)
+            {
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    rig.velocity = new Vector2(rig.velocity.x, 0);
+                    rig.AddForce(new Vector3(0, jump_power, 0), ForceMode2D.Impulse);
+                    jump_count += 1;
+                    CreateDust();
+                }
             }
         }
+        
 
         // 속도 한계치 제한
         if (rig.velocity.x > max_speed)
@@ -127,22 +139,26 @@ public class player_controller : MonoBehaviour
             anim.SetBool("is_running", true);
         }
 
-        // 검 공격 모션
-        if (Input.GetKeyDown(KeyCode.C) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+        if (!is_stunning) // 스턴 상태가 아닐 때
         {
-            anim.SetTrigger("is_attack1");
-            StartCoroutine("Sword_Onhb");
-        }
-        else if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
-        {
-            sword_h.SetActive(false);
-        }
+            // 검 공격 모션
+            if (Input.GetKeyDown(KeyCode.C) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            {
+                anim.SetTrigger("is_attack1");
+                StartCoroutine("Sword_Onhb");
+            }
+            else if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            {
+                sword_h.SetActive(false);
+            }
 
-        // 창 공격 모션
-        if (Input.GetKeyDown(KeyCode.V) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
-        {
-            anim.SetTrigger("is_attack3");
+            // 창 공격 모션
+            if (Input.GetKeyDown(KeyCode.V) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
+            {
+                anim.SetTrigger("is_attack3");
+            }
         }
+        
 
         Debug.DrawRay(rig.position, new Vector3(0, -0.9f, 0), new Color(0, 1, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(rig.position, Vector3.down, 0.9f, LayerMask.GetMask("Platform"));
@@ -181,7 +197,7 @@ public class player_controller : MonoBehaviour
                 rig.velocity = new Vector2(0, 0);
                 rig.AddForce(new Vector3(knock_back_x, knock_back_y, 0), ForceMode2D.Impulse);
                 healthbar.Damage(attack1_dmg, "player1"); // 공격1 딜
-                ShowDamage(attack1_dmg.ToString());
+                ShowText(attack1_dmg.ToString());
                 CreateBlood();
                 StartCoroutine("Hit_Duration");
                 StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.5f));
@@ -191,7 +207,7 @@ public class player_controller : MonoBehaviour
                 rig.velocity = new Vector2(0, 0);
                 rig.AddForce(new Vector3(-knock_back_x, knock_back_y, 0), ForceMode2D.Impulse);
                 healthbar.Damage(attack1_dmg, "player1"); // 공격1 딜
-                ShowDamage(attack1_dmg.ToString());
+                ShowText(attack1_dmg.ToString());
                 CreateBlood();
                 StartCoroutine("Hit_Duration");
                 StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.5f));
@@ -202,12 +218,18 @@ public class player_controller : MonoBehaviour
                 rig.AddForce(new Vector3(reflect_knockback_x, 0, 0), ForceMode2D.Impulse); // 패링성공시 자신한테 반동
                 enemy_rig.AddForce(new Vector3(-reflect_knockback_x, reflect_knockback_y, 0), ForceMode2D.Impulse); // 패링성공시 적한테 반동
                 StartCoroutine("Reflection_Success_Eff"); // 패링성공시 성공 효과 재생
+                enemy.GetComponent<HeroKnight>().ShowText("기절함!");
+                Parrying(); // 패링 파티클 재생
+                StartCoroutine(enemy.GetComponent<HeroKnight>().Stun()); // 패링 성공시 적 스턴
             }
             else if (this.transform.position.x < main_player_trans.transform.position.x && is_reflecting)
             {
                 rig.AddForce(new Vector3(-reflect_knockback_x, 0, 0), ForceMode2D.Impulse); // 패링성공시 자신한테 반동
                 enemy_rig.AddForce(new Vector3(reflect_knockback_x, reflect_knockback_y, 0), ForceMode2D.Impulse); // 패링성공시 적한테 반동
                 StartCoroutine("Reflection_Success_Eff"); // 패링성공시 성공 효과 재생
+                enemy.GetComponent<HeroKnight>().ShowText("기절함!");
+                Parrying(); // 패링 파티클 재생
+                StartCoroutine(enemy.GetComponent<HeroKnight>().Stun()); // 패링 성공시 적 스턴
             }
         }
     }
@@ -220,7 +242,11 @@ public class player_controller : MonoBehaviour
     {
         blood.Play();
     }
-    void ShowDamage(string text)
+    void Parrying()
+    {
+        parrying_eff.Play();
+    }
+    public void ShowText(string text)
     {
         if (floatingTextPrefab)
         {
@@ -244,11 +270,15 @@ public class player_controller : MonoBehaviour
     }
     IEnumerator Reflection() // 패링시도시 0.5초간 움직이지 못하는 방어자세 코루틴
     {
-        is_reflecting = true;
-        reflection_ready_effect.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
-        reflection_ready_effect.SetActive(false);
-        is_reflecting = false;
+        if(parrying_passed_time >= parrying_cooldown) //
+        {
+            parrying_start_cool = Time.time; //
+            is_reflecting = true;
+            reflection_ready_effect.SetActive(true);
+            yield return new WaitForSeconds(0.5f);
+            reflection_ready_effect.SetActive(false);
+            is_reflecting = false;
+        }
     }
     IEnumerator Reflection_Success_Eff() // 패링성공시
     {
@@ -257,5 +287,13 @@ public class player_controller : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
         reflection_effect.SetActive(false);
         is_reflecting = false;
+    }
+    public IEnumerator Stun()
+    {
+        is_stunning = true;
+        stun_icon.SetActive(true);
+        yield return new WaitForSeconds(1.1f);
+        is_stunning = false;
+        stun_icon.SetActive(false);
     }
 }

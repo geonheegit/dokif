@@ -9,11 +9,6 @@ public class healthbar : MonoBehaviour
     public Image health_bar_img;
     public Text hp_text;
 
-    private void Start()
-    {
-        
-    }
-
     public static void Heal(int amount, string target)
     {
         if (target == "player1")
