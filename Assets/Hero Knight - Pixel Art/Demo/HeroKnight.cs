@@ -56,6 +56,7 @@ public class HeroKnight : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         main_player_trans = GameObject.Find("player").GetComponent<Transform>();
+        ultmeter = 0;
     }
     void FixedUpdate()
     {
