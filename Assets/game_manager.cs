@@ -8,11 +8,13 @@ public class game_manager : MonoBehaviour
 {
     public GameObject restart_screen;
     public Text winner_text;
+    float start_time;
     void Start()
     {
         HeroKnight.health = 100;
         player_controller.health = 100;
         restart_screen.SetActive(false);
+        start_time = Time.time;
     }
 
     public void OnClickRestart()
@@ -23,9 +25,19 @@ public class game_manager : MonoBehaviour
     {
         SceneManager.LoadScene("Main_Screen");
     }
-
+    void UltMeterPerTime()
+    {
+        if (Time.time - start_time >= 1f)
+        {
+            start_time = Time.time;
+            ultbar.UltAdd(2, "player1");
+            ultbar.UltAdd(2, "player2");
+        }
+    }
     void Update()
     {
+        UltMeterPerTime();
+
         if (HeroKnight.health == 0)
         {
             restart_screen.SetActive(true);

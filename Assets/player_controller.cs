@@ -8,7 +8,7 @@ public class player_controller : MonoBehaviour
     bool is_hitting;
     bool is_reflecting;
     bool is_stunning;
-    bool is_unabletomove; //
+    bool is_unabletomove;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -63,6 +63,7 @@ public class player_controller : MonoBehaviour
 
         main_player_trans = GameObject.Find("HeroKnight").GetComponent<Transform>();
         is_unabletomove = false;
+        ultmeter = 0;
     }
 
     void FixedUpdate()

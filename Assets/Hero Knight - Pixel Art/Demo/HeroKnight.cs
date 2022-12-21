@@ -93,6 +93,12 @@ public class HeroKnight : MonoBehaviour
                 StartCoroutine("Reflection");
             }
 
+            if (Input.GetKeyDown(KeyCode.Quote) && ultmeter == 100)
+            {
+                ultmeter = 0;
+                StartCoroutine("Ultimate");
+            }
+
             if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
                 m_direc = 0f;
@@ -345,5 +351,10 @@ public class HeroKnight : MonoBehaviour
             StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
             rig.AddForce(new Vector3(knock_back_x * 2, knock_back_y * 2, 0), ForceMode2D.Impulse);
         }
+    }
+
+    public IEnumerator Ultimate()
+    {
+        yield return new WaitForSeconds(1f);
     }
 }
