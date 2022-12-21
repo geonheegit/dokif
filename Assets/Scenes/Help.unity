@@ -783,10 +783,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD50C\uB808\uC774\uC5B4 1 (\uBE68\uAC04\uC0C9 \uB3C4\uC801)\n\uACF5\uACA9\uC18D\uB3C4
-    \uBE60\uB984, \uB370\uBBF8\uC9C0 \uC57D\uD568\n\n[\uC88C\uC6B0\uC774\uB3D9] A,
-    D\n[\uC810\uD504] W (2\uB2E8 \uC810\uD504)\n[\uACF5\uACA91] C (6 \uB370\uBBF8\uC9C0)\n[\uACF5\uACA92]
-    V\n[\uD328\uB9C1] B"
+  m_Text: "\uD50C\uB808\uC774\uC5B4 1 (\uBE68\uAC04\uC0C9 \uB3C4\uC801)\n\n[\uC88C\uC6B0\uC774\uB3D9]
+    A, D\n[\uC810\uD504] W (2\uB2E8 \uC810\uD504)\n[\uACF5\uACA91] X (6 \uB370\uBBF8\uC9C0)\n[\uD328\uB9C1]
+    C\n[\uAD81\uADF9\uAE30] V"
 --- !u!222 &1327575205
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1160,11 +1159,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD50C\uB808\uC774\uC5B4 2 (\uD30C\uB780\uC0C9 \uAE30\uC0AC)\n\uACF5\uACA9\uC18D\uB3C4
-    \uB290\uB9BC, \uB370\uBBF8\uC9C0 \uAC15\uD568\n\n\uC67C\uCABD \uB610\uB294 \uC624\uB978\uCABD
-    \uBC29\uD5A5\uD0A4 [\uC88C\uC6B0\uC774\uB3D9]\n\uC704\uCABD \uBC29\uD5A5\uD0A4
-    (2\uB2E8 \uC810\uD504) [\uC810\uD504]\nK (10 \uB370\uBBF8\uC9C0) [\uACF5\uACA91]\nL
-    [\uACF5\uACA92]\n;(\uC138\uBBF8\uCF5C\uB860) [\uD328\uB9C1]"
+  m_Text: "\uD50C\uB808\uC774\uC5B4 2 (\uD30C\uB780\uC0C9 \uAE30\uC0AC)\n\n\uC67C\uCABD
+    \uB610\uB294 \uC624\uB978\uCABD \uBC29\uD5A5\uD0A4 [\uC88C\uC6B0\uC774\uB3D9]\n\uC704\uCABD
+    \uBC29\uD5A5\uD0A4 (2\uB2E8 \uC810\uD504) [\uC810\uD504]\nL (7 \uB370\uBBF8\uC9C0)
+    [\uACF5\uACA91]\n;(\uC138\uBBF8\uCF5C\uB860) [\uD328\uB9C1]\n'(\uC791\uC740\uB530\uC634\uD45C)
+    [\uAD81\uADF9\uAE30]"
 --- !u!222 &1831706679
 CanvasRenderer:
   m_ObjectHideFlags: 0

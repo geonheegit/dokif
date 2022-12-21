@@ -11,6 +11,7 @@ public class HeroKnight : MonoBehaviour
     bool is_stunning;
     bool is_unabletomove;
     bool is_ready_ult;
+    bool debug;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -26,7 +27,6 @@ public class HeroKnight : MonoBehaviour
     public int reflect_knockback_x = 10;
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
-    public int attack2_dmg = 20;
     public int p1_ult_dmg = 50;
     public int parrying_cooldown = 3;
     float parrying_start_cool;
@@ -67,7 +67,7 @@ public class HeroKnight : MonoBehaviour
         is_unabletomove = false;
         is_ready_ult = false;
         ultmeter = 0;
-
+        debug = false;
     }
     void FixedUpdate()
     {
@@ -95,11 +95,23 @@ public class HeroKnight : MonoBehaviour
     {
         PlayerSettings();
         parrying_passed_time = Time.time - parrying_start_cool;
+
+        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            if (!debug)
+            {
+                debug = true;
+            }
+            else
+            {
+                debug = false;
+            }
+        }
     }
     void PlayerSettings()
     {
 
-        if (Input.GetKey(KeyCode.Y)) // 디버그용 궁극기 게이치 채우기
+        if (Input.GetKeyDown(KeyCode.Y) && debug) // 디버그용 궁극기 게이치 채우기
         {
             ultmeter = 100;
         }
@@ -182,7 +194,7 @@ public class HeroKnight : MonoBehaviour
         if (!is_stunning && !is_unabletomove) // 스턴 상태나 이동 불가 상태가 아닐 때
         {
             // 검 공격 모션
-            if (Input.GetKeyDown(KeyCode.K) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            if (Input.GetKeyDown(KeyCode.L) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
             {
                 anim.SetTrigger("Attack1");
                 StartCoroutine("Att1_Onhb");
@@ -190,12 +202,6 @@ public class HeroKnight : MonoBehaviour
             else if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
             {
                 att1_hb.SetActive(false);
-            }
-
-            // 창 공격 모션
-            if (Input.GetKeyDown(KeyCode.L) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
-            {
-                anim.SetTrigger("Attack3");
             }
         }
 
@@ -391,7 +397,7 @@ public class HeroKnight : MonoBehaviour
     public IEnumerator Ultimate()
     {
         is_ready_ult = true; // 히트박스 방향 전환 판별용 bool
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.4f); // 궁극기 시전시간
         is_ready_ult = false; // 히트박스 방향 전환 판별용 bool
 
         is_unabletomove = true;

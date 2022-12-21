@@ -9,6 +9,7 @@ public class player_controller : MonoBehaviour
     bool is_reflecting;
     bool is_stunning;
     bool is_unabletomove;
+    bool debug;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -24,7 +25,6 @@ public class player_controller : MonoBehaviour
     public int reflect_knockback_x = 10;
     public int reflect_knockback_y = 5;
     public int attack1_dmg = 10;
-    public int attack2_dmg = 20;
     public int parrying_cooldown = 3;
     float parrying_start_cool;
     public float parrying_passed_time;
@@ -54,6 +54,7 @@ public class player_controller : MonoBehaviour
     public ParticleSystem dust;
     public ParticleSystem parrying_eff;
     public ParticleSystem ult_ready_aura;
+    public ParticleSystem ult_debris;
     public GameObject sword_h;
     void Start()
     {
@@ -65,6 +66,8 @@ public class player_controller : MonoBehaviour
         main_player_trans = GameObject.Find("HeroKnight").GetComponent<Transform>();
         is_unabletomove = false;
         ultmeter = 0;
+
+        debug = false;
     }
 
     void FixedUpdate()
@@ -80,12 +83,24 @@ public class player_controller : MonoBehaviour
         PlayerSettings();
 
         parrying_passed_time = Time.time - parrying_start_cool;
+
+        if (Input.GetKey(KeyCode.LeftBracket) && Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            if (!debug)
+            {
+                debug = true;
+            }
+            else
+            {
+                debug = false;
+            }
+        }
     }
 
     void PlayerSettings()
     {
         
-        if (Input.GetKey(KeyCode.T)) // 디버그용 궁극기 게이치 채우기
+        if (Input.GetKeyDown(KeyCode.T) && debug) // 디버그용 궁극기 게이치 채우기
         {
             ultmeter = 100;
         }
@@ -103,12 +118,12 @@ public class player_controller : MonoBehaviour
                 m_direc = 1f;
             }
 
-            if (Input.GetKeyDown(KeyCode.B))
+            if (Input.GetKeyDown(KeyCode.C))
             {
                 StartCoroutine("Reflection");
             }
 
-            if (Input.GetKeyDown(KeyCode.Space) && ultmeter == 100)
+            if (Input.GetKeyDown(KeyCode.V) && ultmeter == 100)
             {
                 ultmeter = 0;
                 StartCoroutine("Ultimate");
@@ -158,7 +173,7 @@ public class player_controller : MonoBehaviour
         if (!is_stunning && !is_unabletomove) // 스턴 상태나 이동 불가 상태가 아닐 때
         {
             // 검 공격 모션
-            if (Input.GetKeyDown(KeyCode.C) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
+            if (Input.GetKeyDown(KeyCode.X) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
             {
                 anim.SetTrigger("is_attack1");
                 StartCoroutine("Sword_Onhb");
@@ -166,12 +181,6 @@ public class player_controller : MonoBehaviour
             else if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
             {
                 sword_h.SetActive(false);
-            }
-
-            // 창 공격 모션
-            if (Input.GetKeyDown(KeyCode.V) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
-            {
-                anim.SetTrigger("is_attack3");
             }
         }
         
@@ -352,7 +361,7 @@ public class player_controller : MonoBehaviour
         }
         ult_icon.SetActive(true);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.4f); // 궁극기 발동 시간
 
         Vector3 current_pos = transform.position;
         if (!spriteRenderer.flipX)
@@ -389,9 +398,12 @@ public class player_controller : MonoBehaviour
     }
     IEnumerator HitByUlt()
     {
+        is_unabletomove = true;
+
         UltHitSelf(10, "R", 1);
         enemy_ult_hit_trail.SetActive(true);
         yield return new WaitForSeconds(0.3f);
+        ult_debris.Play();
         enemy_ult_hit_trail.transform.localPosition = new Vector3(0.21f, 0.21f, 0);
         yield return new WaitForSeconds(0.1f);
         enemy_ult_hit_trail.transform.localPosition = new Vector3(0.21f, -0.21f, 0);
@@ -415,5 +427,6 @@ public class player_controller : MonoBehaviour
         UltHitSelf(8, "R", 1);
         yield return new WaitForSeconds(0.1f);
         UltHitSelf(8, "L", 1);
+        is_unabletomove = false;
     }
 }
