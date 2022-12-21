@@ -9,6 +9,8 @@ public class HeroKnight : MonoBehaviour
     bool is_hitting;
     bool is_reflecting;
     bool is_stunning;
+    bool is_unabletomove;
+    bool is_ready_ult;
 
     public static float health = 100f;
     public static float max_health = 100f;
@@ -30,6 +32,7 @@ public class HeroKnight : MonoBehaviour
     float parrying_start_cool;
     public float parrying_passed_time;
 
+
     [SerializeField] private GameObject floatingTextPrefab;
 
     public GameObject enemy;
@@ -47,6 +50,10 @@ public class HeroKnight : MonoBehaviour
     public GameObject hit_effect;
     public GameObject att1_hb;
     public GameObject att2_hb;
+    public GameObject ult_highlight;
+    public GameObject ult_highlight_left;
+    public GameObject ult_hb_L;
+    public GameObject ult_hb_R;
 
     void Start()
     {
@@ -56,14 +63,32 @@ public class HeroKnight : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         main_player_trans = GameObject.Find("player").GetComponent<Transform>();
+        is_unabletomove = false;
+        is_ready_ult = false;
         ultmeter = 0;
+
     }
     void FixedUpdate()
     {
-        if (!is_hitting && !is_reflecting && HeroKnight.health != 0 && !is_stunning)
+        if (!is_hitting && !is_reflecting && HeroKnight.health != 0 && !is_stunning && !is_unabletomove)
         {
             rig.velocity = new Vector2(m_direc * player_speed * Time.deltaTime, rig.velocity.y);
         }
+
+        if (is_ready_ult)
+        {
+            if (!spriteRenderer.flipX) // 궁 히트박스 방향 전환 유지
+            {
+                ult_highlight.SetActive(true);
+                ult_highlight_left.SetActive(false);
+            }
+            else if (spriteRenderer.flipX)
+            {
+                ult_highlight_left.SetActive(true);
+                ult_highlight.SetActive(false);
+            }
+        }
+        
     }
     void Update()
     {
@@ -72,6 +97,13 @@ public class HeroKnight : MonoBehaviour
     }
     void PlayerSettings()
     {
+
+        if (Input.GetKey(KeyCode.Y)) // 디버그용 궁극기 게이치 채우기
+        {
+            ultmeter = 100;
+        }
+
+
         if (!is_stunning) // 스턴 상태가 아닐 때
         {
             if (Input.GetKey(KeyCode.LeftArrow))
@@ -114,7 +146,7 @@ public class HeroKnight : MonoBehaviour
                 }
             }
         }
-        
+
 
         // 속도 한계치 제한
         if (rig.velocity.x > max_speed)
@@ -127,11 +159,11 @@ public class HeroKnight : MonoBehaviour
         }
 
         // 방향 전환
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && !spriteRenderer.flipX)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && !spriteRenderer.flipX && !is_unabletomove)
         {
             spriteRenderer.flipX = true;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && spriteRenderer.flipX)
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && spriteRenderer.flipX && !is_unabletomove)
         {
             spriteRenderer.flipX = false;
         }
@@ -146,7 +178,7 @@ public class HeroKnight : MonoBehaviour
             anim.SetInteger("AnimState", 1);
         }
 
-        if (!is_stunning) // 스턴 상태가 아닐 때
+        if (!is_stunning && !is_unabletomove) // 스턴 상태나 이동 불가 상태가 아닐 때
         {
             // 검 공격 모션
             if (Input.GetKeyDown(KeyCode.K) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
@@ -165,7 +197,7 @@ public class HeroKnight : MonoBehaviour
                 anim.SetTrigger("Attack3");
             }
         }
-        
+
 
         Debug.DrawRay(rig.position, new Vector3(0, -0.9f, 0), new Color(0, 1, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(rig.position, Vector3.down, 0.9f, LayerMask.GetMask("Platform"));
@@ -183,9 +215,11 @@ public class HeroKnight : MonoBehaviour
                 jump_count = 0;
             }
         }
-        
+
         anim.SetFloat("AirSpeedY", rig.velocity.y);
     }
+
+
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -355,6 +389,26 @@ public class HeroKnight : MonoBehaviour
 
     public IEnumerator Ultimate()
     {
+        is_ready_ult = true; // 히트박스 방향 전환 판별용 bool
         yield return new WaitForSeconds(1f);
+        is_ready_ult = false; // 히트박스 방향 전환 판별용 bool
+
+        is_unabletomove = true;
+
+        if (!spriteRenderer.flipX)
+        {
+            ult_highlight.SetActive(false);
+            ult_hb_R.SetActive(true);
+            yield return new WaitForSeconds(0.02f);
+            ult_hb_R.SetActive(false);
+        }
+        else if (spriteRenderer.flipX)
+        {
+            ult_highlight_left.SetActive(false);
+            ult_hb_L.SetActive(true);
+            yield return new WaitForSeconds(0.02f);
+            ult_hb_L.SetActive(false);
+        }
+        is_unabletomove = false;
     }
 }

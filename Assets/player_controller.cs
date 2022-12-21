@@ -83,12 +83,12 @@ public class player_controller : MonoBehaviour
 
     void PlayerSettings()
     {
-        /*
+        
         if (Input.GetKey(KeyCode.T)) // 디버그용 궁극기 게이치 채우기
         {
             ultmeter = 100;
         }
-        */
+        
 
         if (!is_stunning) // 스턴 상태가 아닐 때
         {
@@ -249,6 +249,13 @@ public class player_controller : MonoBehaviour
                 ultbar.UltAdd(20, "player1"); // 궁극기 게이지 ADD
             }
         }
+
+        if (other.gameObject.name == "ult_hb_L" || other.gameObject.name == "ult_hb_R") // 상대 궁극기에 맞았을 때
+        {
+            StartCoroutine("HitByUlt");
+            StartCoroutine("Stun");
+            StartCoroutine("Hit_Duration");
+        }
     }
 
     void CreateDust()
@@ -270,6 +277,23 @@ public class player_controller : MonoBehaviour
             GameObject prefab = Instantiate(floatingTextPrefab, transform.position, Quaternion.identity);
             prefab.GetComponentInChildren<TextMesh>().text = text;
         }
+    }
+    void UltHitSelf(int dmg, string direc, int knockback_divide)
+    {
+        healthbar.Damage(dmg, "player1"); // 궁 딜
+        ShowText(dmg.ToString());
+        CreateBlood();
+        ShowText("기절함!");
+        StartCoroutine(main_cam.GetComponent<cam_movement>().CamShake(0.07f, 0.9f));
+        if (direc == "L")
+        {
+            rig.AddForce(new Vector3(-knock_back_x * 2, knock_back_y / knockback_divide, 0), ForceMode2D.Impulse);
+        }
+        else if (direc == "R")
+        {
+            rig.AddForce(new Vector3(knock_back_x * 2, knock_back_y / knockback_divide, 0), ForceMode2D.Impulse);
+        }
+        
     }
 
     IEnumerator Sword_Onhb()
@@ -361,5 +385,19 @@ public class player_controller : MonoBehaviour
         }
         is_unabletomove = false;
         ult_icon.SetActive(false);
+    }
+    IEnumerator HitByUlt()
+    {
+        UltHitSelf(10, "R", 1);
+        yield return new WaitForSeconds(0.8f);
+        UltHitSelf(8, "R", 1);
+        yield return new WaitForSeconds(0.1f);
+        UltHitSelf(8, "L", 1);
+        yield return new WaitForSeconds(0.1f);
+        UltHitSelf(8, "L", 1);
+        yield return new WaitForSeconds(0.1f);
+        UltHitSelf(8, "R", 1);
+        yield return new WaitForSeconds(0.1f);
+        UltHitSelf(8, "L", 1);
     }
 }
