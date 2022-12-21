@@ -44,6 +44,7 @@ public class player_controller : MonoBehaviour
     public GameObject ult_hb_L;
     public GameObject ult_hb_R;
     public GameObject ult_trail;
+    public GameObject enemy_ult_hit_trail;
 
     Rigidbody2D rig;
     Animator anim;
@@ -389,7 +390,22 @@ public class player_controller : MonoBehaviour
     IEnumerator HitByUlt()
     {
         UltHitSelf(10, "R", 1);
-        yield return new WaitForSeconds(0.8f);
+        enemy_ult_hit_trail.SetActive(true);
+        yield return new WaitForSeconds(0.3f);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(0.21f, 0.21f, 0);
+        yield return new WaitForSeconds(0.1f);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(0.21f, -0.21f, 0);
+        yield return new WaitForSeconds(0.1f);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(-0.21f, 0.11f, 0);
+        yield return new WaitForSeconds(0.1f);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(0.21f, 0.21f, 0);
+        yield return new WaitForSeconds(0.1f);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(-0.21f, 0.21f, 0);
+        yield return new WaitForSeconds(0.1f);
+        enemy_ult_hit_trail.SetActive(false);
+        enemy_ult_hit_trail.transform.localPosition = new Vector3(-0.21f, -0.21f, 0);
+
+        yield return new WaitForSeconds(0.5f);
         UltHitSelf(8, "R", 1);
         yield return new WaitForSeconds(0.1f);
         UltHitSelf(8, "L", 1);

@@ -40,6 +40,7 @@ public class HeroKnight : MonoBehaviour
     public GameObject reflection_effect;
     public GameObject reflection_ready_effect;
     public GameObject stun_icon;
+    public GameObject enemy_hit_ult_trail;
     Rigidbody2D rig;
     Rigidbody2D enemy_rig;
     Animator anim;
